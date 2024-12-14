@@ -1,0 +1,11 @@
+D:\Repos\task-management-app\backend\TaskManagement.Models\bin\Debug\net9.0\TaskManagement.Models.deps.json
+D:\Repos\task-management-app\backend\TaskManagement.Models\bin\Debug\net9.0\TaskManagement.Models.dll
+D:\Repos\task-management-app\backend\TaskManagement.Models\bin\Debug\net9.0\TaskManagement.Models.pdb
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\TaskManagement.Models.GeneratedMSBuildEditorConfig.editorconfig
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\TaskManagement.Models.AssemblyInfoInputs.cache
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\TaskManagement.Models.AssemblyInfo.cs
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\TaskManagement.Models.csproj.CoreCompileInputs.cache
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\TaskManagement.Models.dll
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\refint\TaskManagement.Models.dll
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\TaskManagement.Models.pdb
+D:\Repos\task-management-app\backend\TaskManagement.Models\obj\Debug\net9.0\ref\TaskManagement.Models.dll
