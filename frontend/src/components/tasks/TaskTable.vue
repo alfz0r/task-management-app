@@ -34,7 +34,7 @@
             <span v-else class="text-gray-400">N/A</span>
           </td>
           <td class="p-2 border border-gray-300">
-            <span v-if="task.modifiedAt">{{
+            <span v-if="task.modifiedAt && task.modifiedAt !== null">{{
               formatDate(task.modifiedAt)
             }}</span>
             <span v-else class="text-gray-400">N/A</span>

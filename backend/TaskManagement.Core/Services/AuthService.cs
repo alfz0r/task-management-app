@@ -1,44 +1,40 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+﻿using System.Security.Claims;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using TaskManagement.Primitives;
-using TaskManagement.Primitives.Interfaces.Configuration;
+using TaskManagement.Primitives.DTOs;
+using TaskManagement.Primitives.Interfaces.Repositories;
+using TaskManagement.Primitives.Interfaces.Services;
 
 namespace TaskManagement.Core.Services;
 
-public class AuthService
+public class AuthService : IAuthService
 {
-	private readonly string _key;
-	public AuthService(IOptions<JwtOptions> options) {
-		_key = options.Value.Key;
-	}
-	public string GenerateToken(User user) {
-		var handler = new JwtSecurityTokenHandler();
+	private readonly IUserRepository _repository;
+	private readonly TokenService _authService;
+	private readonly IHttpContextAccessor _httpContextAccessor;
+	private readonly IMapper _mapper;
 
-		var privateKey = Encoding.UTF8.GetBytes(_key);
-
-		var credentials = new SigningCredentials(
-			new SymmetricSecurityKey(privateKey),
-			SecurityAlgorithms.HmacSha256);
-
-		var tokenDescriptor = new SecurityTokenDescriptor {
-			SigningCredentials = credentials,
-			Expires = DateTime.UtcNow.AddHours(1),
-			Subject = GenerateClaims(user)
-		};
-
-		var token = handler.CreateToken(tokenDescriptor);
-		return handler.WriteToken(token);
+	public AuthService(IUserRepository repository, TokenService authService, IHttpContextAccessor httpContextAccessor, IMapper mapper) {
+		_repository = repository;
+		_authService = authService;
+		_httpContextAccessor = httpContextAccessor;
+		_mapper = mapper;
 	}
 
-	private static ClaimsIdentity GenerateClaims(User user) {
-		var ci = new ClaimsIdentity();
+	public async Task<string> AuthenticateUserAsync(string username, string password) {
+		var user = await _repository.GetUserByUsernameAsync(username);
+		if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+			throw new UnauthorizedAccessException("Invalid credentials");
 
-		ci.AddClaim(new Claim("id", user.Id.ToString()));
-		ci.AddClaim(new Claim(ClaimTypes.Name, user.Username));
+		return _authService.GenerateToken(user);
+	}
 
-		return ci;
+	public async Task RegisterUserAsync(string username, string password) {
+		if (await _repository.GetUserByUsernameAsync(username) != null)
+			throw new InvalidOperationException("Username already exists");
+
+		var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+		await _repository.AddUserAsync(new User { Username = username, PasswordHash = hashedPassword });
 	}
 }

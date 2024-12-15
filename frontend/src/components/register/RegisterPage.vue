@@ -1,10 +1,12 @@
 <template>
-  <div class="flex items-center justify-center h-screen bg-gray-100">
+  <div class="flex items-center justify-center bg-gray-100">
     <div class="w-96 p-6 bg-white shadow-md rounded-md">
       <h1 class="text-2xl font-bold mb-4">Register</h1>
       <form @submit.prevent="register">
         <div class="mb-4">
-          <label for="username" class="block text-sm font-medium">Username</label>
+          <label for="username" class="block text-sm font-medium"
+            >Username</label
+          >
           <input
             id="username"
             type="text"
@@ -14,7 +16,9 @@
         </div>
 
         <div class="mb-4">
-          <label for="password" class="block text-sm font-medium">Password</label>
+          <label for="password" class="block text-sm font-medium"
+            >Password</label
+          >
           <input
             id="password"
             type="password"
@@ -24,7 +28,9 @@
         </div>
 
         <div class="mb-4">
-          <label for="confirmPassword" class="block text-sm font-medium">Confirm Password</label>
+          <label for="confirmPassword" class="block text-sm font-medium"
+            >Confirm Password</label
+          >
           <input
             id="confirmPassword"
             type="password"
@@ -50,7 +56,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import api from '../../services/api';
+import AuthService from '../../services/AuthService';
 
 const username = ref<string>('');
 const password = ref<string>('');
@@ -67,7 +73,7 @@ const register = async (): Promise<void> => {
   }
 
   try {
-    await api.post('/auth/register', { username: username.value, password: password.value });
+    await AuthService.register({ username: username.value, password: password.value });
     success.value = 'Registration successful! Redirecting to login...';
     error.value = '';
 

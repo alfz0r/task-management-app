@@ -33,6 +33,9 @@ public class ApplicationDbContext : DbContext
 				.WithMany(u => u.Tasks)
 				.HasForeignKey(t => t.UserId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			builder.Property(x => x.ModifiedAt)
+				.IsRequired(false);
 		});
 
 		modelBuilder.Entity<User>(builder => {

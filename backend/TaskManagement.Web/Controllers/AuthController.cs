@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Primitives.Interfaces.Services;
 using TaskManagement.Primitives;
+using TaskManagement.Core.Services;
 
 namespace TaskManagement.Web.Controllers;
 
@@ -8,16 +9,18 @@ namespace TaskManagement.Web.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-	private readonly IUserService _userService;
+	private readonly IAuthService _authService;
+	private readonly TokenService _tokenService;
 
-	public AuthController(IUserService userService) {
-		_userService = userService;
+	public AuthController(IAuthService authService, TokenService tokenService) {
+		_authService = authService;
+		_tokenService = tokenService;
 	}
 
 	[HttpPost("login")]
 	public async Task<IActionResult> Login([FromBody] AuthRequest request) {
 		try {
-			var token = await _userService.AuthenticateUserAsync(request.Username, request.Password);
+			var token = await _authService.AuthenticateUserAsync(request.Username, request.Password);
 			return Ok(new {
 				Token = token
 			});
@@ -29,10 +32,23 @@ public class AuthController : ControllerBase
 	[HttpPost("register")]
 	public async Task<IActionResult> Register([FromBody] AuthRequest request) {
 		try {
-			await _userService.RegisterUserAsync(request.Username, request.Password);
+			await _authService.RegisterUserAsync(request.Username, request.Password);
 			return Ok("User registered successfully");
 		} catch (InvalidOperationException ex) {
 			return BadRequest(ex.Message);
 		}
+	}
+
+	[HttpPost("logout")]
+	public IActionResult Logout() {
+		var authHeader = Request.Headers["Authorization"].ToString();
+		if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer ")) {
+			return BadRequest("Invalid token.");
+		}
+
+		var token = authHeader.Replace("Bearer ", "");
+		_tokenService.InvalidateToken(token);
+
+		return Ok("Logged out successfully.");
 	}
 }

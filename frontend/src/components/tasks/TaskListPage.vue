@@ -39,7 +39,8 @@ import { ref, onMounted, watch } from 'vue';
 import { Task } from '../../models/Task';
 import { User } from '../../models/User';
 import { TaskQueryParams } from '../../models/TaskQueryParams';
-import api from '../../services/api';
+import TaskService from '../../services/TaskService';
+import UserService from '../../services/UserService';
 import TaskFilters from './TaskFilters.vue';
 import TaskTable from './TaskTable.vue';
 
@@ -61,30 +62,47 @@ const fetchTasks = async () => {
 
   console.log('Fetching tasks with params:', params);
 
-  const response = await api.get<Task[]>('/tasks', { params });
-  tasks.value = [...response.data];
+  tasks.value = await TaskService.getTasks(params);
 };
 
 const fetchUsers = async () => {
-  const response = await api.get<User[]>('/user/all');
-  users.value = response.data;
+  try {
+    users.value = await UserService.getAllUsers();
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
 };
 
 const addTask = async () => {
   if (!newTask.value.trim()) return;
-  await api.post('/tasks', { name: newTask.value, isCompleted: false });
-  newTask.value = '';
-  await fetchTasks();
+  try {
+    await TaskService.createTask({ name: newTask.value, isCompleted: false });
+    newTask.value = '';
+    await fetchTasks();
+  } catch (error) {
+    console.error('Error adding task:', error);
+    alert('Failed to add task. Please try again.');
+  }
 };
 
 const toggleTaskCompletion = async (task: Task) => {
-  await api.put(`/tasks/${task.id}`, { ...task, isCompleted: !task.isCompleted });
-  await fetchTasks();
+  try {
+    await TaskService.updateTask({ ...task, isCompleted: !task.isCompleted });
+    await fetchTasks();
+  } catch (error) {
+    console.error('Error toggling task completion:', error);
+    alert('Failed to update task. Please try again.');
+  }
 };
 
 const deleteTask = async (id: number) => {
-  await api.delete(`/tasks/${id}`);
-  await fetchTasks();
+  try {
+    await TaskService.deleteTask(id);
+    await fetchTasks();
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    alert('Failed to delete task. Please try again.');
+  }
 };
 
 const applyFilters = (filters: {
@@ -112,4 +130,3 @@ onMounted(async () => {
   await fetchTasks();
 });
 </script>
-

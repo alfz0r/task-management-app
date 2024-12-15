@@ -32,7 +32,7 @@ git clone https://github.com/your-repository/task-management-app.git
 cd task-management-app 
 ```
 
-### 2. Clone the Repository
+### 2. Configure Database and Jwt token
 
 1. Create a PostgreSQL database.
 2. Update the connection string in appsettings.json located in the backend project folder:
@@ -40,7 +40,10 @@ cd task-management-app
 
 ```json
 "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=TaskDb;Username=yourusername;Password=yourpassword"
+    "DefaultConnection": "Host=localhost;Database=<your-database>;Username=<your-username>;Password=<your-password>"
+},
+"JwtSettings": {
+    "Key": "<your-key>"
 }
 ```
 ### 3. Apply Migrations

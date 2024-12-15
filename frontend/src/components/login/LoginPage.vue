@@ -1,10 +1,12 @@
 <template>
-  <div class="flex items-center justify-center h-screen bg-gray-100">
+  <div class="flex items-center justify-center bg-gray-100">
     <div class="w-96 p-6 bg-white shadow-md rounded-md">
       <h1 class="text-2xl font-bold mb-4">Login</h1>
       <form @submit.prevent="login">
         <div class="mb-4">
-          <label for="username" class="block text-sm font-medium">Username</label>
+          <label for="username" class="block text-sm font-medium"
+            >Username</label
+          >
           <input
             id="username"
             type="text"
@@ -14,7 +16,9 @@
         </div>
 
         <div class="mb-4">
-          <label for="password" class="block text-sm font-medium">Password</label>
+          <label for="password" class="block text-sm font-medium"
+            >Password</label
+          >
           <input
             id="password"
             type="password"
@@ -47,8 +51,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
-import api from '../../services/api';
-import { AuthRequest } from '../../models/AuthRequest';
+import AuthService from '../../services/AuthService';
 
 const username = ref<string>('');
 const password = ref<string>('');
@@ -58,19 +61,15 @@ const authStore = useAuthStore();
 
 const login = async () => {
   try {
-    const payload: AuthRequest = {
-      username: username.value,
-      password: password.value,
-    };
+    const payload = { username: username.value, password: password.value };
+    const { token } = await AuthService.login(payload);
 
-    const response = await api.post('/auth/login', payload);
-
-    const token = response.data.token;
     authStore.login(token);
 
     router.push('/tasks');
   } catch (err: any) {
-    error.value = err.response?.data?.message || 'Invalid credentials. Please try again.';
+    error.value =
+      err.response?.data?.message || 'Invalid credentials. Please try again.';
   }
 };
 </script>

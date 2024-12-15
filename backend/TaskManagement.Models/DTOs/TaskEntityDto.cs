@@ -23,7 +23,7 @@ public class TaskEntityDto
 	public DateTime CreatedAt {
 		get; set;
 	}
-	public DateTime ModifiedAt {
+	public DateTime? ModifiedAt {
 		get; set;
 	}
 }

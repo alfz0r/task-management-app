@@ -1,16 +1,17 @@
 import { defineStore } from 'pinia';
+import AuthService from '../services/AuthService';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    isAuthenticated: !!localStorage.getItem('token'),
+    isAuthenticated: AuthService.isAuthenticated(),
   }),
   actions: {
     login(token: string) {
-      localStorage.setItem('token', token);
+      AuthService.saveToken(token);
       this.isAuthenticated = true;
     },
     logout() {
-      localStorage.removeItem('token');
+      AuthService.removeToken();
       this.isAuthenticated = false;
     },
   },

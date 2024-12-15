@@ -4,15 +4,15 @@ import RegisterPage from '../components/register/RegisterPage.vue';
 import TaskListPage from '../components/tasks/TaskListPage.vue';
 import EditTaskPage from '../components/tasks/EditTaskPage.vue';
 import ProfilePage from '../components/Profile/ProfilePage.vue';
+import AuthService from '../services/AuthService';
 
 const routes = [
   {
     path: '/',
     name: 'Login',
     component: LoginPage,
-    beforeEnter: (to, _from, next) => {
-      const token = localStorage.getItem('token');
-      if (token) {
+    beforeEnter: (_to: any, _from: any, next: any) => {
+      if (AuthService.isAuthenticated()) {
         next('/tasks');
       } else {
         next();
@@ -41,6 +41,7 @@ const routes = [
     name: 'EditTask',
     component: EditTaskPage,
     props: true,
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -49,10 +50,8 @@ const router = createRouter({
   routes,
 });
 
-
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
-  if (to.meta.requiresAuth && !token) {
+router.beforeEach((to, _from, next) => {
+  if (to.meta.requiresAuth && !AuthService.isAuthenticated()) {
     next('/');
   } else {
     next();

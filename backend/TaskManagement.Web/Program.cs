@@ -20,7 +20,8 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSingleton<AuthService>();
+builder.Services.AddSingleton<TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
@@ -39,8 +40,7 @@ builder.Services
 		options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 		options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 	})
-	.AddJwtBearer(options =>
-	{
+	.AddJwtBearer(options => {
 		options.TokenValidationParameters = new TokenValidationParameters {
 			ValidateIssuer = false,
 			ValidateAudience = false,
@@ -57,11 +57,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment()) {
 	app.MapOpenApi();
 }
+
 app.UseCors("AllowVueApp");
+app.UseMiddleware<TokenValidationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
